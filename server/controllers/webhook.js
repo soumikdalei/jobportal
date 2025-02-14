@@ -21,7 +21,7 @@ export const clerkWebhooks=async(req,res)=>{
                 }
                 await User.create(userData)
                 res.json({})
-                break
+                break;
 
             }
             case "user.updated":{
@@ -34,15 +34,15 @@ export const clerkWebhooks=async(req,res)=>{
                 }
                 await User.findByIdAndUpdate(data.id,userData)
                 res.json({})
-                break
+                break;
             }
             case "user.deleted":{
                 await User.findByIdAndDelete(data.id)
                 res.json({})
-                break
+                break;
             }
             default:
-                break
+                break;
 
         }
         
