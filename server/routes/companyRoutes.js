@@ -4,7 +4,7 @@ import upload from '../config/multer.js'
 import { protectCompany } from '../middlewares/authMiddleware.js'
 const router=express.Router()
 router.post('/register',upload.single('image'),registerCompany)
-router.post('/login',protectCompany,loginCompany)
+router.post('/login',loginCompany)
 router.get('/company',protectCompany,getCompanyData)
 router.post('/post-job',protectCompany,postnewJob)
 router.get('/applicants',protectCompany,getJobAppplicants)
