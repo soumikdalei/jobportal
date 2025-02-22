@@ -19,7 +19,7 @@ export const AppContextProvider=(props)=>{
                const {data}=await axios.get(backendurl+'/api/jobs')
                if(data.success){
                     setJobs(data.jobs)
-                    console.log(data.jobs)
+                   
                }
                else{
                     toast.error(data.message)
