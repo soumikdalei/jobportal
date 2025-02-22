@@ -33,7 +33,7 @@ export const AppContextProvider=(props)=>{
                const {data}=await axios.get(backendurl+'/api/company/company',{headers:{token:companyToken}})
                if(data.success){
                     setcompanyData(data.company)
-                    console.log(data)
+                    
                }
                else{
                     toast.error(data.message)
