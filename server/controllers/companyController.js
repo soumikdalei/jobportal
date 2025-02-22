@@ -1,9 +1,10 @@
-import { json } from "express";
+import { application, json } from "express";
 import Company from "../models/Company.js";
 import bcrypt from "bcrypt" 
 import {v2 as cloudinary} from 'cloudinary'
 import generatetoken from "../utils/generateToken.js";
 import Job from "../models/Jobs.js";
+import JobApplication from "../models/JobApplication.js";
 
 export const registerCompany=async(req,res)=>{
     const {name,email,password}=req.body;
@@ -85,19 +86,37 @@ export const postnewJob=async(req,res)=>{
      }
 }
 export const getJobAppplicants=async(req,res)=>{
-
+    try {
+        const companyId=req.company._id
+        const applications=await JobApplication.find({companyId})
+        .populate('userId',"name image resume")
+        .populate("jobId","title location category level salary").exec()
+        return res.json({success:true,applications})
+    } catch (error) {
+        res.json({success:false,applications})
+    }
 }
 export const getCompanyPostedJobs=async(req,res)=>{
       try {
         const companyId=req.company._id
         const jobs=await Job.find({companyId})
-        res.json({success:true,jobsData:jobs})
+        const jobsData=await Promise.all(jobs.map(async(job)=>{
+             const applicants=await JobApplication.find({jobId:job._id})
+             return {...job.toObject(),applicants:applicants.length}
+        }))
+        res.json({success:true,jobsData})
       } catch (error) {
         res.json({success:false,message:error.message})
       }
 }
 export const changeJobApplicationStatus=async(req,res)=>{
-
+    try{
+    const {id,status}=req.body
+    await JobApplication.findOneAndUpdate({_id:id},{status})
+    res.json({success:true,message:'Success chnaged'})}
+    catch(error){
+        res.json({success:false,message:error.message})
+    }
 }
 export const changeVisibility=async(req,res)=>{
      try{ const {id}=req.body

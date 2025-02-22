@@ -1,9 +1,54 @@
 import { manageJobsData } from "../assets/assets";
 import {useNavigate} from "react-router-dom"
 import moment from "moment"
+import { useContext, useEffect, useState } from "react";
+import { Appcontext } from "../context/Appcontext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import Loading from "../components/Loading";
 export default function Mangerjobs(){
     const navigate=useNavigate()
-    return (
+    const [jobs,setJobs]=useState([])
+    const {backendurl,companyToken}=useContext(Appcontext)
+    const fetchCompanyJobs=async()=>{
+           try {
+             const {data}=await axios.get(backendurl+"/api/company/list-jobs",{headers:{token:companyToken}})
+             if(data.success){
+                 setJobs(data.jobsData.reverse())
+                 console.log(data.jobsData)
+             }else{
+                toast.error(data.message)
+             }
+
+           } catch (error) {
+            toast.error(error.message)
+           }
+    }
+    useEffect(()=>
+        {
+            if(companyToken){
+                fetchCompanyJobs()
+            }
+        },[companyToken])
+    const changejobvisibility=async(id)=>{
+        try {
+            const {data}=await axios.post(backendurl+'/api/company/change-visibility',{id},{headers:{token:companyToken}})
+            if(data.success){
+                toast.success(toast.message)
+                fetchCompanyJobs()
+            }
+            else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+        
+    }    
+    return jobs? jobs.length===0 ? (
+    <div className="flex items-center justify-center h-[70vh]">
+        <p className="text-xl sm:text-2xl">No Jobs Available or Posted</p>
+    </div>):(
         <div className="container p-4 max-w-5xl">
         <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-200 max-sm:text-sm">
@@ -19,14 +64,14 @@ export default function Mangerjobs(){
                     </tr>
                 </thead>
                 <tbody>
-                    {manageJobsData.map((job,index)=>(<tr className="text-gray-700" key={index}>
+                    {jobs.map((job,index)=>(<tr className="text-gray-700" key={index}>
                       <td className="py-2 px-4 border-b max-sm:hidden">{index+1}</td>
                       <td className="py-2 px-4 border-b">{job.title}</td>
                       <td className="py-2 px-4 border-b max-sm:hidden">{moment(job.date).format('ll')}</td>
                       <td className="py-2 px-4 border-b max-sm:hidden">{job.location}</td>
                       <td className="py-2 px-4 border-b text-center">{job.applicants}</td>
                       <td className="py-2 px-4 border-b">
-                        <input className="scale-125 ml-4" type="checkbox"/>
+                        <input onChange={()=>changejobvisibility(job._id)} className="scale-125 ml-4" type="checkbox" checked={job.visible}/>
                       </td>
                     </tr>))}
                 </tbody>
@@ -36,5 +81,5 @@ export default function Mangerjobs(){
             <button onClick={()=>navigate('/dashboard/add-job')} className="bg-black text-white py-2 px-4 rounded">Add New Job</button>
         </div>
         </div>
-    )
+    ):<Loading/>
 }

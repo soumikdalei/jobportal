@@ -1,4 +1,5 @@
 import JobApplication from "../models/JobApplication.js"
+import Job from "../models/Jobs.js"
 import User from "../models/User.js"
 import {v2 as cloudinary} from "cloudinary"
 export const getUserData=async(req,res)=>{
@@ -18,7 +19,7 @@ export const applyForJob=async(req,res)=>{
      const userId=req.auth.userId
      try {
         const isAlreadyApplied=await JobApplication.findOne({ jobId,userId  })
-        if(isAlreadyApplied.length>0){
+        if(isAlreadyApplied){
             return res.json({success:false,message:"Already Applied"})
         }
         const jobData=await Job.findById(jobId)
@@ -42,12 +43,15 @@ export const applyForJob=async(req,res)=>{
 export const getUserapplications=async(req,res)=>{
      try {
        const userId=req.auth.userId
-       const application=await JobApplication.find({userId}).populate('companyId','name email image')
-       .populate('jobId','title description location category level salary').exec()
-       if(!application){
+       
+       const applications=await JobApplication.find({ userId })
+       .populate("companyId","name email image")
+       .populate("jobId","title description location category level salary").exec()
+       console.log(applications)
+       if(!applications){
          return res.json({success:false,message:'No Job Applications Found For this User.'})
        }
-       return res.json({success:true,application})
+       return res.json({success:true,applications})
      } catch (error) {
       res.json({success:false,message:error.message})
      }
@@ -55,7 +59,7 @@ export const getUserapplications=async(req,res)=>{
 export const updateUserResume=async(req,res)=>{
      try {
       const userId=req.auth.userId
-      const resumeFile=req.resumeFile
+      const resumeFile=req.file
       const userData=await User.findById(userId)
       if (resumeFile) {
           const resumeUpload=await cloudinary.uploader.upload(resumeFile.path)

@@ -1,24 +1,41 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
+import { useContext, useEffect } from "react";
+import { Appcontext } from "../context/Appcontext";
+import { toast } from "react-toastify";
 
 export default function Dashboard(){
     const navigate=useNavigate()
+    const {companyData,setcompanyData,setcompanyToken}=useContext(Appcontext)
+    const logout=()=>{
+        setcompanyToken(null)
+        localStorage.removeItem('companyToken')
+        setcompanyData(null)
+        navigate('/')
+    }
+    useEffect(()=>{
+        if(companyData){
+            navigate('/dashboard/manage-job')
+        }
+        
+    },[])
     return(<div className="min-h-screen">
     <div className="shadow-2xl py-4">
         <div className="px-5 flex justify-between items-center">
             <img onClick={e=>navigate('/')} className="max-sm:w-32 cursor-pointer" src={assets.logo}/>
-            <div className="flex items-center gap-3">
-                <p className="max-sm:hidden">Welcome,Great Stack</p>
+            {companyData && (<div className="flex items-center gap-3">
+                <p className="max-sm:hidden">Welcome,{companyData.name}</p>
                 <div className="relative group">
-                    <img className="w-8 border rounded-full" src={assets.company_icon}/>
+                    <img className="w-8 border rounded-full" src={companyData.image}/>
                     <div className="absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-12">
                         <ul className="list-none m-0 p-2 bg-white rounded-md border text-sm">
-                            <li className="py-1 px-2 cursor-pointer pr-10">Logout</li>
-                            <li></li>
+                            <li onClick={logout} className="py-1 px-2 cursor-pointer pr-10">Logout</li>
+                           
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div>)}
+            
         </div>
     </div>
     <div className="flex items-start">
@@ -38,7 +55,7 @@ export default function Dashboard(){
             </NavLink>
         </ul>
     </div>
-    <div>
+    <div className="flex-1 h-full p-2 sm:p-5">
         <Outlet/>
     </div>
 

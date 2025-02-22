@@ -17,13 +17,13 @@ export default function RecruiterLogin(){
     const onSubmitHandler=async(e)=>{
         e.preventDefault()
         if (state==='Sign Up'&& !isTextDataSubmitted){
-            setTextDataSubmitted(true)
+            return setTextDataSubmitted(true)
         }
         try {
             if(state==="Login"){
                 const {data}=await axios.post(backendurl+'/api/company/login',{email,password})
                 if(data.success){
-                    console.log(data)
+                    
                     setcompanyData(data.company)
                     setcompanyToken(data.token)
                     localStorage.setItem('companyToken',data.token)
@@ -35,11 +35,27 @@ export default function RecruiterLogin(){
                 }
             }
             else{
-                
+                const formData=new FormData()
+                formData.append('name',name)
+                formData.append('password',password)
+                formData.append('email',email)
+                formData.append('image',image)
+                const {data}=await axios.post(backendurl+'/api/company/register',formData)
+                if(data.success){
+                    
+                    setcompanyData(data.company)
+                    setcompanyToken(data.token)
+                    localStorage.setItem('companyToken',data.token)
+                    setshowRecruiterLogin(false)
+                    navigate('/dashboard')
+                }
+                else{
+                    toast.error(data.message)
+                }
             }
             
         } catch (error) {
-            
+            toast.error(error.message)
         }
     }
     useEffect(()=>{
