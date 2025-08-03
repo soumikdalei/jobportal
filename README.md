@@ -1,9 +1,9 @@
 # JobPortal
 
-An interactive job portal deployed at **[jobportal‑gamma‑ten.vercel.app](https://jobportal‑gamma‑ten.vercel.app)** that connects job seekers and recruiters seamlessly.
+An interactive job portal deployed at **[jobportal‑gamma‑ten.vercel.app][(https://jobportal‑gamma‑ten.vercel.app](https://jobportal-gamma-ten.vercel.app/))** that connects job seekers and recruiters seamlessly.
 
 ## 🌐 Live Demo
-Access the app here: https://jobportal‑gamma‑ten.vercel.app
+Access the app here: https://jobportal‑gamma‑ten.vercel.app/
 
 ## 🧭 Features
 - **User Authentication**: Sign up & login for both employers and job seekers
